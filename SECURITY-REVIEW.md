@@ -40,4 +40,11 @@ Real values belong in a trusted deployment environment, not in source code. Do *
 
 ## Source of truth
 
-The question copy and branching in `docs/questions.json` are copied from `KR4705/voice_agent_sarvam` branch `flow/quote-journey`. We will not reuse the original live survey database.
+The original `docs/questions-v1.json` is copied from `KR4705/voice_agent_sarvam` branch `flow/quote-journey`. The active `docs/questions.json` is a revised v2 review proposal and **is not compatible with the unchanged production server without new backend validation and persistence work**. We will not reuse the original live survey database.
+
+## Additional v2 privacy and messaging safeguards
+
+- Scheduled callback emails must have a one-message consent, validation of future time and time zone, a signed unsubscribe/cancel link, TTL and minimal logs. Phone numbers are not a delivery route for these reminders.
+- Guide and research findings mailings are separate, explicit email preferences; no automatic generic thank-you email is sent. Content and sending are blocked until fulfillment is real.
+- Raw speech transcriptions may remain in secure server-side research answers for integrity, but are not sent back to the browser for display. The nonblocking interpretation must be marked **unconfirmed** in stored metadata, not falsely treated as respondent approval.
+- Original API voice shapes and question ordering must be migrated and re-tested; no production launch on the old server contract.
