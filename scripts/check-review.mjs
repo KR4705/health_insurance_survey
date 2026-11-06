@@ -35,7 +35,7 @@ function run(choices={}) {
     if(item.terminal)return {path,answers,end:current};
     let val = choices[current] ?? (item.type==='multi' ? ['price'] : item.type==='single' ? item.options[0].value : item.type==='message'||item.type==='welcome'?'yes' : item.type==='scale'?3 : item.type==='text'?Object.fromEntries(item.fields.map(x=>[x.name,'sample'])):item.type==='voice'?{answer_final:'sample',notes:[],interpretations:[],edited:false}:{skipped:true});
     answers[current]=val;
-    const picked=item.options?.find(o=>o.value===(val?.value??val));
+    const picked=item.options?.find(o=>o.value===(val?.value??val)) || [item.primary,item.secondary].find(o=>o?.value===(val?.value??val));
     if(picked?.goto)current=picked.goto;
     else if(item.goto)current=item.goto;
     else {
