@@ -103,7 +103,7 @@
       if (!state.demoSignedIn) {
         html += '<div class="inline-note"><strong>Simulation only.</strong> No real Google account is accessed. Use made-up details if trying the alternative.</div>';
         html += buttons({label:'Continue with demo Google identity',action:'mock-google'});
-        html += '<button class="back-btn" type="button" data-action="toggle-contact">'+esc(q.contactToggle || 'Use email or mobile instead')+'</button>';
+        html += '<button class="quiet-link-action" type="button" data-action="toggle-contact">'+esc(q.contactToggle || 'Use email or mobile instead')+'</button>';
         if (state.signinAlternative){
           html += '<label class="form-field">Email or mobile (test details only)<input id="testContact" type="text" inputmode="email" autocomplete="off" placeholder="e.g. demo@example.com" value="'+esc(state.fields.signinContact || '')+'"></label>';
           html += '<label class="form-field">First name (optional)<input id="testName" type="text" autocomplete="off" placeholder="e.g. Demo" value="'+esc(state.fields.signinName || '')+'"></label>';
@@ -112,7 +112,7 @@
       } else {
         html += '<div class="inline-note">Simulated identity: '+esc(state.demoEmail)+' — no sign-in or save occurs.</div>';
         html += buttons({label:"Yes, let's start",action:'signin-yes'},{label:'No thanks',action:'signin-no'});
-        html += '<button class="back-btn" type="button" data-action="not-you">Not you? Restart identity</button>';
+        html += '<button class="quiet-link-action" type="button" data-action="not-you">Not you? Restart identity</button>';
       }
       html += '<p class="micro">The real app will prioritize the official Google button and offer an email/mobile alternative.</p>';
     } else if (q.type === 'single' || q.type === 'multi') {
