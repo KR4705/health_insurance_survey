@@ -160,7 +160,7 @@
       const answer = state.voiceText[q.id] != null ? state.voiceText[q.id] : ((state.answers[q.id] || {}).answer_final || '');
       const mode = state.voiceMode[q.id] || (answer?'text':'prompt');
       if(mode === 'ack'){
-        const info=demoInterpretations[q.id]||'You shared what stood out to you about this quote.';
+        const info=state.voiceOrigin[q.id]==='typed' ? 'Your written answer was captured. A real interpretation will appear here after the AI is connected.' : (demoInterpretations[q.id]||'You shared what stood out to you about this quote.');
         html+='<div class="readback" role="status" aria-live="polite"><h3>I understood</h3><p>'+esc(info)+'</p><span class="micro">Illustrative feedback, not a live AI interpretation. Moving to the next question automatically.</span></div>';
         html+=buttons({label:'Continue now',action:'voice-next'},{label:'Edit my answer',action:'voice-edit'});
       }else if(mode === 'prompt'){
@@ -289,7 +289,7 @@
       stopVoiceAuto();
       const answer=(state.voiceText[q.id]||'').trim();
       if(!answer)return;
-      const info=demoInterpretations[q.id]||'You shared what stood out to you about this quote.';
+      const info=state.voiceOrigin[q.id]==='typed' ? 'Your written answer was captured. The live AI will summarize it without adding facts.' : (demoInterpretations[q.id]||'You shared what stood out to you about this quote.');
       state.versions[q.id]=[{version:1,bullets:[info],quote:'',unclear:'',fallback:false,verdict:null,answer}];
       return advance({answer_final:answer,edited:false,notes:[],interpretations:state.versions[q.id]});
     }
