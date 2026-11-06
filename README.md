@@ -4,14 +4,20 @@ A **review-first** survey project. This repository currently contains a **safe, 
 
 ## Preview and navigation
 
-The review page is in `docs/index.html` and includes:
-1. A visual seven-step build plan.
-2. A branching survey demo driven by the original `questions.json`.
-3. A full six-stage flow review with an approval checklist and copyable feedback.
+The rebuild uses the **Fieldnotes layout and SVG assets** from the user-provided generated website:
+- `docs/index.html` — reconstructed landing page with the original SVG illustration.
+- `docs/survey.html` — complete, mobile-first, interactive survey preview (revised v2 flow).
+- `docs/review.html` — preserved implementation roadmap and detailed flow review.
+- `docs/fieldnotes.css` — generated-site cream/green/Georgia visual design expanded to all question templates.
+- `docs/assets/*.svg` — six locally hosted original graphic assets (illustration, mic, typing, waveform, stop, complete).
+- `docs/questions.json` — 31-screen approved-direction data. `docs/questions-v1.json` preserves the earlier version.
+- `docs/about.html` / `docs/privacy.html` — restyled preview information pages.
+
+The source website is [Quote Journey Fieldnotes](https://quote-journey-fieldnotes.amusedcabin14.chatgpt.site/). SVGs are stored in this repository rather than fetched from that domain at runtime.
 
 The original question content came from `KR4705/voice_agent_sarvam` at `flow/quote-journey`; the active `docs/questions.json` now contains proposed v2 research changes. The old flow is archived as `docs/questions-v1.json`. The other repository's `main` branch has **not** been modified.
 
-## Publish this review with GitHub Pages
+## Publish the survey preview with GitHub Pages
 
 1. Go to **Settings → Pages** in this repository.
 2. Select **Deploy from a branch**, **main**, then **/docs**, and Save.
@@ -31,8 +37,8 @@ The intended Pages URL *if Pages is successfully enabled* is `https://kr4705.git
 
 ## Production architecture after flow approval
 
-The full product uses:
-- The existing, unchanged Node 22 API contract from the source branch in Vercel serverless functions.
+The full product will use:
+- A revised Node 22 backend based on the source branch, including changes required by the new v2 routing, nonblocking voice interpretation, reminder scheduling and email preferences.
 - A **new** Supabase project in Mumbai, separate from the live survey, with RLS, restricted RPC grants, private audio bucket and secure audio deletion.
 - Google Identity Services or contact alternative.
 - Server-only Sarvam transcription and read-back.
@@ -60,10 +66,10 @@ Full route through paid and dropped branches; no-consent/screen-out/callback; op
 
 ## Status
 
-**Phase 01: design review template.** The active demo is explicitly not a launched research survey.
+**Phase 01: Fieldnotes visual rebuild committed.** The landing and all 31 survey screens are interactive mock pages; no live respondent collection occurs.
 
 
-## Review revision 2 (awaiting final approval)
+## Revised flow 2 (used for visual rebuild; production go-live not approved)
 
 The active `docs/questions.json` now reflects the owner's requested changes. The previous reference remains available as `docs/questions-v1.json`.
 
