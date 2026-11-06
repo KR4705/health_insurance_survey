@@ -17,6 +17,20 @@ The source website is [Quote Journey Fieldnotes](https://quote-journey-fieldnote
 
 The original question content came from `KR4705/voice_agent_sarvam` at `flow/quote-journey`; the active `docs/questions.json` now contains proposed v2 research changes. The old flow is archived as `docs/questions-v1.json`. The other repository's `main` branch has **not** been modified.
 
+## Run the preview locally
+
+No npm install, API key or backend is required for the mock:
+
+```bash
+git clone https://github.com/KR4705/health_insurance_survey.git
+cd health_insurance_survey
+python3 -m http.server 8000 --directory docs
+```
+
+Open `http://localhost:8000/` for the Fieldnotes landing, `http://localhost:8000/survey.html` to test the full flow, or `http://localhost:8000/review.html` for the original plan and review checklist.
+
+Do not open `docs/index.html` as a `file://` URL; the survey loads `questions.json` over HTTP. **No real recording occurs**: the microphone screen is an animated simulation and displays only an illustrative, unconfirmed “I understood” message. No responses are saved and reminders or email preferences do not send messages.
+
 ## Publish the survey preview with GitHub Pages
 
 1. Go to **Settings → Pages** in this repository.
