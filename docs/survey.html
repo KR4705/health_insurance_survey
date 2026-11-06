@@ -7,7 +7,7 @@
   <title>The survey · Quote Journey</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
   <link rel="stylesheet" href="./fieldnotes.css">
-  <script src="./survey.js" defer></script>
+  <script src="./app.js" defer></script>
 </head>
 <body>
 <header class="study-header">
@@ -16,9 +16,15 @@
     <div class="header-side"><a class="header-link" href="./review.html#flow">Review flow</a><span class="preview-badge">Preview</span></div>
   </div>
 </header>
-<main class="survey-shell" id="surveyStage" aria-live="polite">
-  <p class="muted">Loading the survey flow…</p>
+<main class="survey-shell" id="survey" data-panel="survey">
+  <div id="surveyStage" aria-live="polite">
+    <p class="muted">Loading the survey flow…</p>
+  </div>
 </main>
+<!-- The shared review engine has hidden review-only hooks. They do not collect or transmit any data. -->
+<div id="plan" hidden></div><div id="flow" hidden></div>
+<button id="restartDemo" hidden></button><button id="approveBtn" hidden></button><button id="changesBtn" hidden></button>
+<select id="guideDecision" hidden><option value=""></option></select><select id="callbackDecision" hidden><option value=""></option></select><select id="w1Decision" hidden><option value=""></option></select><select id="thanksDecision" hidden><option value=""></option></select><textarea id="notes" hidden></textarea><span id="copyStatus" hidden></span>
 <footer class="study-footer"><div class="container">
   <span>Independent student research</span>
   <span>Prototype · No answers, audio or emails are sent</span>
