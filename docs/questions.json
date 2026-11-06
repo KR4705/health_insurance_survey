@@ -14,64 +14,31 @@
       "type": "message",
       "icon": "wave",
       "landing": true,
-      "title": "Welcome, and thank you for being here 👋",
+      "title": "Your health insurance quote, in your words 👋",
       "body": [
-        "I'm Rohith, a product management student. I'm studying what happens after someone gets a price for health insurance: what makes it clear, what makes people hesitate, and what helps them decide."
+        "I'm Rohith, a product student. I'm learning what people understood, questioned, and did after getting a health insurance quote."
       ],
-      "whyTitle": "Why your answers matter",
+      "whyTitle": "Why this matters",
       "why": [
-        "Many people get a health insurance quote and never go ahead, often because it's hard to tell what the plan will actually pay for. Your experience, good or bad, shows where quotes leave people unsure. That helps make quotes clearer and more honest, not pushier."
+        "Your experience shows what was helpful and what information may have been missing."
       ],
       "facts": [
         "About 5 minutes",
-        "Speak or type, whichever is easier",
+        "Speak or type",
         "No right or wrong answers"
       ],
-      "smallPrint": "This is an independent student study. It isn't run by an insurance company.",
+      "smallPrint": "Independent student research. Not run by an insurance company.",
       "primary": {
         "label": "Get started",
         "value": "yes"
       }
     },
     {
-      "id": "C00",
-      "step": 0,
-      "type": "welcome",
-      "icon": "wave",
-      "title": "First, a quick sign-in",
-      "lead": "So each person answers once, and you can pick up where you left off.",
-      "whyTitle": "Why we ask you to sign in",
-      "why": [
-        "So each person answers once. With Google, you can also pick up where you left off on another device.",
-        "With Google we only receive your name and email: never your password, contacts or anything else in your account.",
-        "Your email or number is kept separately from your answers. Rohith sees it only if you ask for the guide or a time to get back to you; otherwise it's erased when you finish."
-      ],
-      "consent": "",
-      "primary": {
-        "label": "Yes, let's start",
-        "value": "yes"
-      },
-      "secondary": {
-        "label": "No thanks",
-        "value": "no",
-        "goto": "DECLINED"
-      },
-      "signinPrompt": "Sign in with Google in one tap to begin.",
-      "titleSignedIn": "Hi {first}, thanks for being here 👋",
-      "leadSignedIn": "So each person answers once, and you can pick up where you left off. Start whenever you're ready.",
-      "contactLabel": "Your email or mobile number",
-      "contactPlaceholder": "e.g. priya@gmail.com or 98765 43210",
-      "contactHint": "Outside India? Start your number with + and the country code, e.g. +971.",
-      "nameLabel": "Your first name (optional)",
-      "contactButton": "Continue",
-      "contactToggle": "Use your email or mobile number instead"
-    },
-    {
       "id": "W1",
       "step": 0,
       "type": "single",
       "title": "Do you have about 5 minutes now?",
-      "helper": "A few questions about a health insurance quote you got recently.",
+      "helper": "If now isn't convenient, you can ask for one email reminder.",
       "options": [
         {
           "value": "yes",
@@ -99,20 +66,69 @@
         "W1": "later"
       },
       "goto": "CALLBACK",
-      "title": "When is a good time to get back to you?",
-      "helper": "We'll send you the link again then. Nothing else.",
+      "title": "When should we email you a reminder?",
+      "helper": "Choose a date and time. We'll send one survey link by email at that time, and no other messages.",
       "fields": [
         {
-          "name": "when",
-          "label": "A good time",
-          "placeholder": "e.g. Tomorrow after 6 pm"
+          "name": "date",
+          "type": "date",
+          "label": "Date",
+          "placeholder": "Choose a date"
         },
         {
-          "name": "contact",
-          "label": "WhatsApp number or email",
-          "placeholder": "e.g. 98765 43210"
+          "name": "time",
+          "type": "time",
+          "label": "Time",
+          "placeholder": "Choose a time"
+        },
+        {
+          "name": "timezone",
+          "type": "text",
+          "label": "Time zone",
+          "placeholder": "e.g. Asia/Kolkata"
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "label": "Email for this one reminder",
+          "placeholder": "e.g. sample@example.com"
         }
-      ]
+      ],
+      "reminderOnly": true,
+      "reminderOptIn": "Please send me one email reminder at the time I choose."
+    },
+    {
+      "id": "C00",
+      "step": 0,
+      "type": "welcome",
+      "icon": "wave",
+      "title": "First, a quick sign-in",
+      "lead": "Sign in to avoid answering twice and to pick up where you stopped.",
+      "whyTitle": "Why we ask you to sign in",
+      "why": [
+        "So each person answers once. With Google, you can also pick up where you left off on another device.",
+        "With Google we only receive your name and email: never your password, contacts or anything else in your account.",
+        "Your email or number is kept separately from your answers. Rohith sees it only if you ask for the guide or a time to get back to you; otherwise it's erased when you finish."
+      ],
+      "consent": "",
+      "primary": {
+        "label": "Yes, let's start",
+        "value": "yes"
+      },
+      "secondary": {
+        "label": "No thanks",
+        "value": "no",
+        "goto": "DECLINED"
+      },
+      "signinPrompt": "Sign in with Google in one tap to begin.",
+      "titleSignedIn": "Hi {first}, thanks for being here 👋",
+      "leadSignedIn": "You can pick up where you left off. Start whenever you're ready.",
+      "contactLabel": "Your email or mobile number",
+      "contactPlaceholder": "e.g. priya@gmail.com or 98765 43210",
+      "contactHint": "Outside India? Start your number with + and the country code, e.g. +971.",
+      "nameLabel": "Your first name (optional)",
+      "contactButton": "Continue",
+      "contactToggle": "Use your email or mobile number instead"
     },
     {
       "id": "W2",
@@ -124,9 +140,9 @@
       },
       "title": "Before we start",
       "body": [
-        "Your answers are used only for this study by Rohith, a product student. They are never sold or shared.",
-        "If you speak, your voice is turned into text and the recording is deleted when you finish. Please don't mention policy numbers or anyone's medical details.",
-        "You can stop at any time."
+        "Your answers are for this independent student research only. They aren't sold.",
+        "If you speak, we convert your voice to text privately and delete the recording once the completed survey is saved. You'll see a short 'I understood' note, not the full transcript.",
+        "Please don't mention policy numbers or anyone's medical details. You can stop at any time."
       ],
       "primary": {
         "label": "I agree, let's start",
@@ -353,11 +369,18 @@
       "showIf": {
         "W1": "yes"
       },
-      "title": "When you saw the quote, how ready did you feel to go ahead?",
+      "title": "When you saw the quote, how sure were you about buying that plan?",
       "min": 1,
       "max": 5,
-      "minLabel": "Not at all ready",
-      "maxLabel": "Completely ready"
+      "minLabel": "Very unsure",
+      "maxLabel": "Very sure",
+      "scaleLabels": [
+        "Very unsure",
+        "A little unsure",
+        "Not sure",
+        "Fairly sure",
+        "Very sure"
+      ]
     },
     {
       "id": "H8",
@@ -390,64 +413,76 @@
         "H8": "yes"
       },
       "title": "What held you back?",
-      "helper": "Pick up to 3.",
+      "helper": "Choose up to 3 reasons. Pick what mattered most to you.",
       "options": [
         {
           "value": "price",
           "label": "The price",
-          "emoji": "💸"
-        },
-        {
-          "value": "cover",
-          "label": "Not sure what was covered or left out",
-          "emoji": "🔍"
-        },
-        {
-          "value": "claims",
-          "label": "Worried a claim wouldn't be paid",
-          "emoji": "🏥"
+          "emoji": "💸",
+          "group": "Cost and timing"
         },
         {
           "value": "waiting",
           "label": "Waiting periods",
-          "emoji": "⏳"
+          "emoji": "⏳",
+          "group": "Cost and timing"
         },
         {
           "value": "limits",
           "label": "Limits like room rent or co-pay",
-          "emoji": "🧾"
-        },
-        {
-          "value": "family",
-          "label": "Needed to check with family",
-          "emoji": "👨‍👩‍👧"
-        },
-        {
-          "value": "compare",
-          "label": "Wanted to compare other plans",
-          "emoji": "⚖️"
-        },
-        {
-          "value": "trust",
-          "label": "Wasn't sure I could trust the company",
-          "emoji": "🤨"
-        },
-        {
-          "value": "health",
-          "label": "Questions about my health conditions",
-          "emoji": "🩺"
+          "emoji": "🧾",
+          "group": "Cost and timing"
         },
         {
           "value": "urgent",
           "label": "It didn't feel urgent",
-          "emoji": "🗓️"
+          "emoji": "🗓️",
+          "group": "Cost and timing"
+        },
+        {
+          "value": "cover",
+          "label": "Not sure what was covered or left out",
+          "emoji": "🔍",
+          "group": "Cover and claims"
+        },
+        {
+          "value": "claims",
+          "label": "Worried a claim wouldn't be paid",
+          "emoji": "🏥",
+          "group": "Cover and claims"
+        },
+        {
+          "value": "health",
+          "label": "Questions about my health conditions",
+          "emoji": "🩺",
+          "group": "Cover and claims"
+        },
+        {
+          "value": "family",
+          "label": "Needed to check with family",
+          "emoji": "👨‍👩‍👧",
+          "group": "Comparing and trust"
+        },
+        {
+          "value": "compare",
+          "label": "Wanted to compare other plans",
+          "emoji": "⚖️",
+          "group": "Comparing and trust"
+        },
+        {
+          "value": "trust",
+          "label": "Wasn't sure I could trust the company",
+          "emoji": "🤨",
+          "group": "Comparing and trust"
         },
         {
           "value": "other",
           "label": "Something else",
-          "emoji": "✏️"
+          "emoji": "✏️",
+          "group": "Something else"
         }
-      ]
+      ],
+      "layout": "tiles"
     },
     {
       "id": "H9v",
@@ -555,11 +590,19 @@
         "W1": "yes",
         "P11": "paid"
       },
-      "title": "How confident did you feel when you paid?",
+      "title": "When you paid, how sure were you that you understood what the plan would cover?",
       "min": 1,
       "max": 5,
-      "minLabel": "Not at all",
-      "maxLabel": "Completely"
+      "minLabel": "Not sure at all",
+      "maxLabel": "Very sure",
+      "helper": "Think about what the plan would pay for, and what it would not.",
+      "scaleLabels": [
+        "Not sure at all",
+        "A little unsure",
+        "Not sure",
+        "Fairly sure",
+        "Very sure"
+      ]
     },
     {
       "id": "P12b",
@@ -582,7 +625,8 @@
       "showIf": {
         "W1": "yes"
       },
-      "title": "If you could change one thing about the quote you saw, what would it be?"
+      "title": "What else, if anything, would have helped you understand or decide about that quote?",
+      "helper": "For example, simpler explanations of insurance words, examples of what's covered, or a better way to compare plans. 'Nothing else' is fine."
     },
     {
       "id": "X14",
@@ -591,24 +635,33 @@
       "showIf": {
         "W1": "yes"
       },
-      "title": "Would you like a free 1-page guide to reading a health insurance quote?",
+      "title": "Would you like us to email you something after the study?",
       "options": [
         {
-          "value": "whatsapp",
-          "label": "Yes, on WhatsApp",
-          "emoji": "💬"
+          "value": "guide",
+          "label": "A 1-page guide to reading a health insurance quote",
+          "emoji": "📄"
         },
         {
-          "value": "email",
-          "label": "Yes, by email",
-          "emoji": "📧"
+          "value": "findings",
+          "label": "A short summary of what this study finds",
+          "emoji": "🔎"
+        },
+        {
+          "value": "both",
+          "label": "Both the guide and the study summary",
+          "emoji": "✉️"
         },
         {
           "value": "no",
-          "label": "No, thanks",
+          "label": "No thanks",
           "emoji": "👋"
         }
-      ]
+      ],
+      "helper": "Choose what you would like to receive. We will only email you about what you choose, when it's ready.",
+      "guideReady": false,
+      "findingsReady": false,
+      "delivery": "email_only"
     },
     {
       "id": "X14c",
@@ -617,24 +670,31 @@
       "showIf": {
         "W1": "yes",
         "X14": [
-          "whatsapp",
-          "email"
+          "guide",
+          "findings",
+          "both"
         ]
       },
-      "title": "Where should we send it?",
+      "title": "Which email should we use?",
       "fields": [
         {
-          "name": "contact",
-          "label": "WhatsApp number or email",
-          "placeholder": "e.g. priya@gmail.com or 98765 43210",
+          "name": "email",
+          "type": "email",
+          "label": "Email address",
+          "placeholder": "e.g. sample@example.com",
           "prefill": {
             "from": "email",
             "when": {
-              "X14": "email"
+              "X14": [
+                "guide",
+                "findings",
+                "both"
+              ]
             }
           }
         }
-      ]
+      ],
+      "helper": "We'll only use this address to send the item or items you selected."
     },
     {
       "id": "Q21",
@@ -643,7 +703,7 @@
       "completes": true,
       "title": "Thank you, {first}. That really helps.",
       "body": [
-        "Your answers are saved. That's everything."
+        "That's everything. Select Finish to send your answers."
       ],
       "primaryLabel": "Finish"
     },
@@ -663,9 +723,9 @@
       "icon": "check",
       "terminal": true,
       "jumpOnly": true,
-      "title": "Thanks, we'll be in touch",
+      "title": "Your reminder has been requested",
       "body": [
-        "We'll send you the link at the time you picked. You can close this page."
+        "We'll email you the survey link at the date and time you chose."
       ]
     },
     {
@@ -701,5 +761,31 @@
         "Thanks again. We have your answers from last time, so there's nothing more to do."
       ]
     }
-  ]
+  ],
+  "version": "review-v2-2026-11-06",
+  "reviewStatus": "awaiting final approval; not production",
+  "reviewChanges": [
+    "W1 before C00; later branch requests structured email reminder without sign-in",
+    "H9 as themed tiles, max three choices",
+    "Q7 confidence wording and clear five-point anchors",
+    "Voice nonblocking 'I understood' and auto-continue; original transcript not displayed",
+    "P12c measures understanding of cover",
+    "X13 asks for useful information beyond quote, gently suggesting examples",
+    "X14 only email opt-ins for guide and/or research findings",
+    "Short landing introduction; no referrals or thank-you emails"
+  ],
+  "voiceExperience": {
+    "mode": "voice_or_type",
+    "maxSeconds": 120,
+    "clipSeconds": 29,
+    "readbackTitle": "I understood",
+    "rawTranscriptVisible": false,
+    "requiresConfirmation": false,
+    "autoContinueAfterReadback": true,
+    "encouragement": [
+      "Take your time.",
+      "You can add anything else that stood out.",
+      "That's enough whenever you're ready."
+    ]
+  }
 }
