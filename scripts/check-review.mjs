@@ -45,7 +45,7 @@ function run(choices={}) {
   }
   throw new Error('Route exceeded 50 screens (possible loop)');
 }
-const paid=run({W1:'yes',W2:'yes',S1:'yes',S2:'yes',H8:'yes',H9:['price','cover'],P11:'paid',X14:'email'});
+const paid=run({W1:'yes',W2:'yes',S1:'yes',S2:'yes',H8:'yes',H9:['price','cover'],P11:'paid',X14:'guide'});
 assert.equal(paid.end,'THANKS');
 assert.ok(paid.path.includes('H9v')&&paid.path.includes('H10'),'Hesitation branch visible');
 assert.ok(paid.path.includes('P12a')&&paid.path.includes('P12c'),'Paid branch visible');
@@ -57,11 +57,34 @@ assert.ok(dropped.path.includes('S1b')&&dropped.path.includes('S1bv'),'Maybe bra
 assert.ok(!dropped.path.includes('H9')&&!dropped.path.includes('H10'),'No hesitation bypasses blockers');
 assert.ok(dropped.path.includes('P12b')&&!dropped.path.includes('P12a'),'Dropped branch visible');
 assert.ok(!dropped.path.includes('X14c'),'Declining guide skips collection');
-assert.equal(run({W1:'later'}).end,'CALLBACK');
-assert.equal(run({W1:'no'}).end,'DECLINED');
+const later=run({W1:'later'});
+assert.equal(later.end,'CALLBACK');
+assert.ok(!later.path.includes('C00'),'Reminder branch must not require sign-in');
+assert.ok(index.W1<index.C00,'Five-minute question must precede sign-in');
+assert.ok(index.CB<index.C00,'One-time reminder form must be before sign-in');
+const noThanks=run({W1:'no'});
+assert.equal(noThanks.end,'DECLINED');
+assert.ok(!noThanks.path.includes('C00'),'No thanks should not require sign-in');
 assert.equal(run({W1:'yes',W2:'no'}).end,'DECLINED');
 assert.equal(run({W1:'yes',W2:'yes',S2:'no'}).end,'SCREENED_OUT');
+const get = id => q.questions[index[id]];
+assert.deepEqual(get('X14').options.map(o=>o.value),['guide','findings','both','no'],'Email delivery choices must include both research materials');
+assert.equal(get('X14').delivery,'email_only');
+assert.equal(get('X14c').fields[0].name,'email');
+assert.ok(get('CB').fields.some(f=>f.name==='timezone'),'Automated reminder requires time zone');
+assert.ok(get('CB').fields.some(f=>f.name==='email'),'Automated reminder uses email only');
+assert.equal(get('H9').layout,'tiles');
+assert.equal(new Set(get('H9').options.map(x=>x.group)).size,4,'Blocker reasons need logical tile groups');
+assert.deepEqual(get('Q7').scaleLabels,['Very unsure','A little unsure','Not sure','Fairly sure','Very sure']);
+assert.match(get('P12c').title,/understood what the plan would cover/i,'Payment confidence must have an explicit object');
+assert.match(get('X13').title,/what else/i,'Improvement question should invite additional needs');
+assert.equal(q.voiceExperience.requiresConfirmation,false);
+assert.equal(q.voiceExperience.rawTranscriptVisible,false);
+assert.equal(q.voiceExperience.autoContinueAfterReadback,true);
+assert.equal(q.voiceExperience.readbackTitle,'I understood');
 const html=read('docs/index.html'), js=read('docs/app.js'), css=read('docs/style.css');
+assert.ok(!js.includes('Here’s what you said')&&!js.includes('Confirm my answer'),'New voice experience should not expose old mandatory confirmation UI');
+assert.ok(js.includes('tile-grid')&&css.includes('.tile-grid'),'Tile layout must be styled and rendered');
 for(const path of ['./app.js','./style.css','./questions.json'])assert.ok(html.includes(path)||js.includes(path),'Resource link missing '+path);
 for(const id of ['plan','survey','flow'])assert.ok(html.includes('id="'+id+'"'),'Review panel missing '+id);
 assert.ok(!/\b(localStorage|indexedDB|sessionStorage)\b/.test(js),'Prototype must not store input');
@@ -71,4 +94,4 @@ for(const name of readdirSync(new URL('docs/',root))){
   if(!name.endsWith('.html')&&!name.endsWith('.js')&&!name.endsWith('.json')&&!name.endsWith('.css'))continue;
   assert.ok(!secretPattern.test(read('docs/'+name)),'Possible credential in '+name);
 }
-console.log('Review checks passed: 31 screens, 6 stages, required branches, mock-only safeguards and no key-like strings.');
+console.log('Review v2 checks passed: revised flow order, email-only follow-ups, grouped tiles, new voice behavior, exit branches and no exposed credentials.');
