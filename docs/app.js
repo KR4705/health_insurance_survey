@@ -2,6 +2,8 @@
 (() => {
   'use strict';
   const tabs = ['plan', 'survey', 'flow'];
+  let voiceAutoTimer = null;
+  const stopVoiceAuto = () => { if(voiceAutoTimer !== null){clearTimeout(voiceAutoTimer);voiceAutoTimer=null;} };
   const state = { questions: [], steps: [], current: 'INTRO', history: [], answers: {}, picks: {}, fields: {}, other: {}, voiceText: {}, voiceMode: {}, versions: {}, previewReadback: null, demoSignedIn: false, demoEmail: 'demo@example.com', demoName: 'Demo respondent', signinAlternative: false, error: '', navLock: false };
   const byId = id => document.getElementById(id);
   const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -39,6 +41,7 @@
   }
   function navigate(id) {
     if (state.navLock) return;
+    stopVoiceAuto();
     state.current = id;
     state.error = '';
     state.previewReadback = null;
@@ -57,12 +60,14 @@
   }
   function back() {
     if (state.navLock || !state.history.length) return;
+    stopVoiceAuto();
     state.current = state.history.pop();
     state.previewReadback = null;
     state.error = '';
     render(true);
   }
   function resetDemo() {
+    stopVoiceAuto();
     Object.assign(state, {current:'INTRO',history:[],answers:{},picks:{},fields:{},other:{},voiceText:{},voiceMode:{},versions:{},previewReadback:null,demoSignedIn:false,demoEmail:'demo@example.com',demoName:'Demo respondent',signinAlternative:false,error:'',navLock:false});
     render(true);
   }
@@ -109,13 +114,26 @@
     } else if (q.type === 'single' || q.type === 'multi') {
       const saved = state.picks[q.id] !== undefined ? state.picks[q.id] : state.answers[q.id];
       const selected = q.type === 'multi' ? (Array.isArray(saved) ? saved : []) : (saved && typeof saved === 'object' ? saved.value : saved);
-      html += '<div class="q-options" role="'+(q.type==='single'?'radiogroup':'group')+'" aria-label="'+esc(q.title)+'">';
-      (q.options || []).forEach((o,i) => {
+      const optionHtml = (o,i) => {
         const on = q.type === 'multi' ? selected.includes(o.value) : selected === o.value;
-        html += '<button type="button" class="q-option '+(on?'selected':'')+'" role="'+(q.type==='single'?'radio':'checkbox')+'" aria-checked="'+on+'" tabindex="'+(q.type==='single' && i>0 && !on ? '-1':'0')+'" data-choice="'+esc(o.value)+'">';
-        html += '<span class="emoji" aria-hidden="true">'+esc(o.emoji||'○')+'</span><span>'+esc(o.label)+'</span><span class="selection-mark" aria-hidden="true">'+(on?'✓':'')+'</span></button>';
-      });
-      html += '</div>';
+        const baseClass = q.layout === 'tiles' ? 'q-option q-tile' : 'q-option';
+        return '<button type="button" class="'+baseClass+' '+(on?'selected':'')+'" role="'+(q.type==='single'?'radio':'checkbox')+'" aria-checked="'+on+'" tabindex="'+(q.type==='single'&&i>0&&!on?'-1':'0')+'" data-choice="'+esc(o.value)+'">'+
+          '<span class="emoji" aria-hidden="true">'+esc(o.emoji||'○')+'</span><span>'+esc(o.label)+'</span><span class="selection-mark" aria-hidden="true">'+(on?'✓':'')+'</span></button>';
+      };
+      if(q.layout === 'tiles'){
+        const groups=[...new Set((q.options||[]).map(o=>o.group||'Other'))];
+        groups.forEach(group=>{
+          html+='<section class="tile-section"><h3 class="tile-heading">'+esc(group)+'</h3><div class="tile-grid" role="group" aria-label="'+esc(group)+'">';
+          (q.options||[]).filter(o=>(o.group||'Other')===group).forEach(o=>{
+            html+=optionHtml(o,q.options.indexOf(o));
+          });
+          html+='</div></section>';
+        });
+      }else{
+        html+='<div class="q-options" role="'+(q.type==='single'?'radiogroup':'group')+'" aria-label="'+esc(q.title)+'">';
+        (q.options||[]).forEach((o,i)=>{html+=optionHtml(o,i);});
+        html+='</div>';
+      }
       if (q.type === 'single' && selected === 'other' && (q.options || []).some(o => o.value==='other' && o.other)){
         html += '<label class="form-field">Tell us more<input type="text" maxlength="500" id="otherText" value="'+esc(state.other[q.id] || (state.answers[q.id] && state.answers[q.id].text) || '')+'" placeholder="Your answer"></label>';
       }
@@ -125,31 +143,36 @@
       html+='<div class="scale-options" role="radiogroup" aria-label="'+esc(q.title)+'">';
       for(let i=q.min;i<=q.max;i++) html+='<button type="button" class="q-option '+(saved===i?'selected':'')+'" role="radio" aria-checked="'+(saved===i)+'" data-scale="'+i+'">'+i+'</button>';
       html+='</div><div class="scale-labels"><span>'+esc(q.minLabel)+'</span><span>'+esc(q.maxLabel)+'</span></div>';
+      if(q.scaleLabels && saved)html+='<p class="scale-feedback">You chose: <strong>'+esc(q.scaleLabels[saved-q.min])+'</strong></p>';
       html+=buttons({label:'Continue',action:'scale-continue'});
     } else if (q.type === 'text'){
       const data = state.fields[q.id] || state.answers[q.id] || {};
       (q.fields || []).forEach(field => {
-        html+='<label class="form-field">'+esc(field.label)+'<input maxlength="500" type="text" data-field="'+esc(field.name)+'" value="'+esc(data[field.name] || '')+'" placeholder="'+esc(field.placeholder || '')+'"></label>';
+        const type = ['date','time','email'].includes(field.type)?field.type:'text';
+        const fallback = field.name === 'timezone' ? (Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Kolkata') : (
+          field.prefill ? ((state.fields.signinContact||'').includes('@')?state.fields.signinContact:(state.demoSignedIn && !state.demoEmail.includes('•')?state.demoEmail:'')) : ''
+        );
+        html+='<label class="form-field">'+esc(field.label)+'<input maxlength="500" type="'+type+'" data-field="'+esc(field.name)+'" value="'+esc(data[field.name] || fallback)+'" placeholder="'+esc(field.placeholder || '')+'"></label>';
       });
-      html+=buttons({label:'Continue',action:'text-continue'});
+      if(q.reminderOnly)html+='<p class="inline-note">Only one email reminder is requested. This review site does not actually schedule or send emails.</p>';
+      html+=buttons({label:q.reminderOnly?'Request one reminder':'Continue',action:'text-continue'});
     } else if(q.type === 'voice'){
       const answer = state.voiceText[q.id] != null ? state.voiceText[q.id] : ((state.answers[q.id] || {}).answer_final || '');
-      const mode = state.voiceMode[q.id] || 'prompt';
-      const savedAnswer = state.answers[q.id] && state.answers[q.id].answer_final;
-      if (mode === 'prompt' && !savedAnswer) {
-        html += '<p class="q-helper">Speak or type, whichever is easier. You can speak for up to 2 minutes in the real survey.</p>';
-        html += '<div class="voice-start"><button type="button" data-action="voice-sample"><span aria-hidden="true">🎙</span>Try a sample voice answer</button><button type="button" data-action="voice-type"><span aria-hidden="true">✍️</span>Type instead</button></div>';
-        html += '<p class="micro">Microphone and Sarvam transcription are not connected in this preview.</p>';
-      } else {
-        html += '<label class="form-field">Your answer<textarea id="voiceAnswer" rows="5" placeholder="Describe what happened in your own words.">'+esc(answer)+'</textarea></label>';
-        html += '<div class="voice-start"><button type="button" data-action="voice-sample"><span aria-hidden="true">🎙</span>Insert sample transcript</button><button type="button" data-action="voice-type"><span aria-hidden="true">✍️</span>Edit by typing</button></div>';
-        if(state.previewReadback && state.previewReadback.id===q.id){
-          html+='<div class="readback" role="dialog" aria-modal="false" aria-labelledby="readbackTitle"><h3 id="readbackTitle">Here’s what you said</h3><p>'+esc(state.previewReadback.text)+'</p><span class="micro">Simulated read-back only. Production will use Sarvam to summarize without adding facts.</span>';
-          html+=buttons({label:"Yes, that's right",action:'voice-yes'},{label:'Not quite',action:'voice-no'});
-          html+='</div>';
-        } else html+=buttons({label:'Confirm my answer',action:'voice-confirm'});
+      const mode = state.voiceMode[q.id] || (answer?'text':'prompt');
+      if(mode === 'ack'){
+        const info=demoInterpretations[q.id]||'You shared what stood out to you about this quote.';
+        html+='<div class="readback" role="status" aria-live="polite"><h3>I understood</h3><p>'+esc(info)+'</p><span class="micro">Illustrative feedback, not a live AI interpretation. Moving to the next question automatically.</span></div>';
+        html+=buttons({label:'Continue now',action:'voice-next'},{label:'Edit my answer',action:'voice-edit'});
+      }else if(mode === 'prompt'){
+        html+='<p class="q-helper">Speak or type, whichever is easier. In the live app, you can speak for up to 2 minutes.</p>';
+        html+='<div class="voice-start"><button type="button" data-action="voice-sample"><span aria-hidden="true">🎙</span>Preview voice capture</button><button type="button" data-action="voice-type"><span aria-hidden="true">✍️</span>Type instead</button></div>';
+        html+='<p class="micro">No microphone is used in this prototype. In production: brief, neutral encouragement while you speak, then “I understood” and automatic continuation.</p>';
+      }else{
+        html+='<label class="form-field">Write your answer<textarea id="voiceAnswer" rows="5" placeholder="Describe what happened in your own words.">'+esc(answer)+'</textarea></label>';
+        html+='<div class="voice-start"><button type="button" data-action="voice-sample"><span aria-hidden="true">🎙</span>Try a sample recording</button><button type="button" data-action="voice-type"><span aria-hidden="true">✍️</span>Keep typing</button></div>';
+        html+=buttons({label:'Continue with my answer',action:'voice-continue'});
       }
-      if (q.optional) html+='<button class="back-btn" type="button" data-action="voice-skip">Skip this optional question</button>';
+      if(q.optional && mode!=='ack')html+='<button class="back-btn" type="button" data-action="voice-skip">Skip this optional question</button>';
     } else if(q.type==='finish'){
       html+='<div class="inline-note">Review demo only: finishing here will not save a response or delete any audio, because there is no backend in this preview.</div>';
       html+=buttons({label:'Finish demo',action:'finish'});
@@ -170,8 +193,27 @@
     H9v: "The waiting period and the room rent limit made me pause.",
     P12a: "I went ahead after I understood what was covered.",
     P12b: "I needed a clearer explanation of the limits and the total cost.",
-    X13: "I'd make the exclusions easier to find and explain."
+    X13: "I wanted short explanations of insurance words and a clearer list of exclusions."
   };
+  const demoInterpretations = {
+    S1bv: 'You would find it helpful if someone explained waiting periods.',
+    Q5: 'The price was higher than you expected, and the cover was not clear.',
+    H9v: 'Waiting periods and room rent limits gave you doubts.',
+    P12a: 'You decided to buy after the cover became clearer.',
+    P12b: 'You wanted clearer limits and total costs before deciding.',
+    X13: 'You wanted simpler terms and a clearer explanation of exclusions.'
+  };
+  function showVoiceAcknowledgement(id){
+    stopVoiceAuto();
+    if(state.current!==id)return;
+    state.voiceMode[id]='ack';
+    state.error='';
+    render(false);
+    voiceAutoTimer=setTimeout(()=>{
+      voiceAutoTimer=null;
+      if(state.current===id && state.voiceMode[id]==='ack')action('voice-next');
+    },2300);
+  }
   function getPick(q) { return state.picks[q.id] === undefined ? state.answers[q.id] : state.picks[q.id]; }
   function choiceContinue(){
     const q=currentQuestion();
@@ -214,29 +256,39 @@
     if(name==='choice-continue')return choiceContinue();
     if(name==='scale-continue'){const v=getPick(q);if(typeof v!=='number'){state.error='Select a number from the scale.';render(false);return;}return advance(v);}
     if(name==='text-continue'){
-      const fields=state.fields[q.id] || {};const output={};
-      for(const f of q.fields||[]){const s=(fields[f.name]||'').trim();if(!s){state.error='Please complete '+f.label.toLowerCase()+'.';render(false);return;}output[f.name]=s.slice(0,500);}
+      const fields=state.fields[q.id] || {};
+      const output={};
+      for(const f of q.fields||[]){
+        const fallback=f.name==='timezone'?(Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Kolkata'):(f.prefill ? ((state.fields.signinContact||'').includes('@')?state.fields.signinContact:(state.demoSignedIn&&!state.demoEmail.includes('•')?state.demoEmail:'')):'');
+        const val=(fields[f.name]||fallback||'').trim();
+        if(!val){state.error='Please complete '+f.label.toLowerCase()+'.';render(false);return;}
+        if(f.type==='email'&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)){state.error='Please enter an email address.';render(false);return;}
+        output[f.name]=val.slice(0,500);
+      }
       return advance(output);
     }
-    if(name==='voice-sample'){state.voiceMode[q.id]='text';state.voiceText[q.id]=sample[q.id]||'I was not sure what the quote meant.';state.previewReadback=null;state.error='';render(false);return;}
-    if(name==='voice-type'){state.voiceMode[q.id]='text';state.error='';render(false);const el=byId('voiceAnswer');if(el)el.focus();return;}
-    if(name==='voice-confirm'){
+    if(name==='voice-sample'){
+      state.voiceText[q.id]=sample[q.id]||'I was not sure what the quote meant.';
+      return showVoiceAcknowledgement(q.id);
+    }
+    if(name==='voice-type'||name==='voice-edit'){
+      stopVoiceAuto();
+      state.voiceMode[q.id]='text';state.error='';
+      render(false);const el=byId('voiceAnswer');if(el)el.focus();
+      return;
+    }
+    if(name==='voice-continue'){
       const answer=(state.voiceText[q.id]||'').trim();
-      if(!answer){state.error='Please type an answer, or insert a sample transcript.';render(false);return;}
-      state.previewReadback={id:q.id,text:answer};state.error='';render(false);
-      const heading=byId('readbackTitle');if(heading){heading.tabIndex=-1;heading.focus();}return;
+      if(!answer){state.error='Please write an answer before continuing.';render(false);return;}
+      return showVoiceAcknowledgement(q.id);
     }
-    if(name==='voice-no'){
-      const versions=state.versions[q.id]||[];versions.push({version:versions.length+1,verdict:'not_quite',answer:state.previewReadback.text});
-      state.versions[q.id]=versions;state.previewReadback=null;state.error='Edit your answer, then confirm it again.';render(false);
-      const el=byId('voiceAnswer');if(el)el.focus();return;
-    }
-    if(name==='voice-yes'){
-      const answer=(state.previewReadback||{}).text;
+    if(name==='voice-next'){
+      stopVoiceAuto();
+      const answer=(state.voiceText[q.id]||'').trim();
       if(!answer)return;
-      const versions=state.versions[q.id]||[];versions.push({version:versions.length+1,verdict:'yes',answer,bullets:[answer],quote:'',unclear:'',fallback:true});
-      state.versions[q.id]=versions;
-      return advance({answer_final:answer,edited:versions.length>1,notes:[],interpretations:versions});
+      const info=demoInterpretations[q.id]||'You shared what stood out to you about this quote.';
+      state.versions[q.id]=[{version:1,bullets:[info],quote:'',unclear:'',fallback:false,verdict:null,answer}];
+      return advance({answer_final:answer,edited:false,notes:[],interpretations:state.versions[q.id]});
     }
     if(name==='voice-skip')return advance({skipped:true});
     if(name==='finish')return advance({skipped:true});
@@ -248,7 +300,7 @@
     if(e.target.id==='testContact')state.fields.signinContact=e.target.value;
     if(e.target.id==='testName')state.fields.signinName=e.target.value;
     if(e.target.id==='otherText')state.other[q.id]=e.target.value;
-    if(e.target.id==='voiceAnswer'){const hadReadback=!!state.previewReadback;const pos=e.target.selectionStart;state.voiceText[q.id]=e.target.value;state.previewReadback=null;if(hadReadback){render(false);const field=byId('voiceAnswer');if(field){field.focus();field.setSelectionRange(pos,pos);}}}
+    if(e.target.id==='voiceAnswer'){state.voiceText[q.id]=e.target.value;}
     if(e.target.hasAttribute('data-field')){
       if(!state.fields[q.id])state.fields[q.id]={};
       state.fields[q.id][e.target.dataset.field]=e.target.value;
