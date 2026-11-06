@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const tabs = ['plan', 'survey', 'flow'];
-  const standalone = /\/survey(?:\.html)?\/?$/.test(location.pathname);
+  const standalone = Boolean(window.QUOTE_JOURNEY_STANDALONE) || /\/survey(?:\.html)?\/?$/.test(location.pathname);
   let recordingTick=null;
   let recordingStarted=0;
   const stopRecordingTick=()=>{if(recordingTick!==null){clearInterval(recordingTick);recordingTick=null;}};
