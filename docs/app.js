@@ -181,7 +181,7 @@
         html+='<div class="voice-start"><button type="button" data-action="voice-sample"><img src="./assets/microphone.svg" alt="">Preview recording</button><button type="button" data-action="voice-type"><img src="./assets/type.svg" alt="">Keep typing</button></div>';
         html+=buttons({label:'Continue with my answer',action:'voice-continue'});
       }
-      if(q.optional && mode!=='ack' && mode!=='record')html+='<button class="back-btn" type="button" data-action="voice-skip">Skip this optional question</button>';
+      if(q.optional && mode!=='ack' && mode!=='record')html+='<button class="quiet-skip" type="button" data-action="voice-skip">Skip this optional question</button>';
     } else if(q.type==='finish'){
       html+='<div class="inline-note">Review demo only: finishing here will not save a response or delete any audio, because there is no backend in this preview.</div>';
       html+=buttons({label:'Finish demo',action:'finish'});
@@ -194,7 +194,7 @@
     if(state.error) html+='<div class="inline-note" role="alert">'+esc(state.error)+'</div>';
     html+='<div class="demo-status">🔒 Prototype mode · no real autosave, microphone, Google sign-in or AI requests</div></div>';
     host.innerHTML=html;
-    if (focus) { const title=byId('demoQuestionTitle'); if (title) title.focus({preventScroll:true}); }
+    if (focus && standalone && typeof window.scrollTo === 'function') window.scrollTo({top:0,left:0,behavior:'auto'});
   }
   const sample = {
     S1bv: "I would want someone to help explain the waiting periods.",
