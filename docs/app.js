@@ -4,7 +4,7 @@
   const tabs = ['plan', 'survey', 'flow'];
   let voiceAutoTimer = null;
   const stopVoiceAuto = () => { if(voiceAutoTimer !== null){clearTimeout(voiceAutoTimer);voiceAutoTimer=null;} };
-  const state = { questions: [], steps: [], current: 'INTRO', history: [], answers: {}, picks: {}, fields: {}, other: {}, voiceText: {}, voiceMode: {}, versions: {}, previewReadback: null, demoSignedIn: false, demoEmail: 'demo@example.com', demoName: 'Demo respondent', signinAlternative: false, error: '', navLock: false };
+  const state = { questions: [], steps: [], current: 'INTRO', history: [], answers: {}, picks: {}, fields: {}, other: {}, voiceText: {}, voiceMode: {}, versions: {}, voiceOrigin: {}, previewReadback: null, demoSignedIn: false, demoEmail: 'demo@example.com', demoName: 'Demo respondent', signinAlternative: false, error: '', navLock: false };
   const byId = id => document.getElementById(id);
   const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const currentQuestion = () => state.questions.find(q => q.id === state.current);
@@ -68,7 +68,7 @@
   }
   function resetDemo() {
     stopVoiceAuto();
-    Object.assign(state, {current:'INTRO',history:[],answers:{},picks:{},fields:{},other:{},voiceText:{},voiceMode:{},versions:{},previewReadback:null,demoSignedIn:false,demoEmail:'demo@example.com',demoName:'Demo respondent',signinAlternative:false,error:'',navLock:false});
+    Object.assign(state, {current:'INTRO',history:[],answers:{},picks:{},fields:{},other:{},voiceText:{},voiceMode:{},versions:{},voiceOrigin:{},previewReadback:null,demoSignedIn:false,demoEmail:'demo@example.com',demoName:'Demo respondent',signinAlternative:false,error:'',navLock:false});
     render(true);
   }
   function buttons(primary, secondary) {
@@ -268,11 +268,14 @@
       return advance(output);
     }
     if(name==='voice-sample'){
+      state.voiceOrigin[q.id]='spoken';
       state.voiceText[q.id]=sample[q.id]||'I was not sure what the quote meant.';
       return showVoiceAcknowledgement(q.id);
     }
     if(name==='voice-type'||name==='voice-edit'){
       stopVoiceAuto();
+      if(name==='voice-edit' && state.voiceOrigin[q.id]==='spoken')state.voiceText[q.id]='';
+      state.voiceOrigin[q.id]='typed';
       state.voiceMode[q.id]='text';state.error='';
       render(false);const el=byId('voiceAnswer');if(el)el.focus();
       return;
