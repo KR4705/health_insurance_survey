@@ -2,9 +2,13 @@
 (() => {
   'use strict';
   const tabs = ['plan', 'survey', 'flow'];
+  const standalone = /\/survey\.html$/.test(location.pathname);
+  let recordingTick=null;
+  let recordingStarted=0;
+  const stopRecordingTick=()=>{if(recordingTick!==null){clearInterval(recordingTick);recordingTick=null;}};
   let voiceAutoTimer = null;
   const stopVoiceAuto = () => { if(voiceAutoTimer !== null){clearTimeout(voiceAutoTimer);voiceAutoTimer=null;} };
-  const state = { questions: [], steps: [], current: 'INTRO', history: [], answers: {}, picks: {}, fields: {}, other: {}, voiceText: {}, voiceMode: {}, versions: {}, voiceOrigin: {}, previewReadback: null, demoSignedIn: false, demoEmail: 'demo@example.com', demoName: 'Demo respondent', signinAlternative: false, error: '', navLock: false };
+  const state = { questions: [], steps: [], current: standalone?'W1':'INTRO', history: [], answers: standalone?{INTRO:'yes'}:{}, picks: {}, fields: {}, other: {}, voiceText: {}, voiceMode: {}, versions: {}, voiceOrigin: {}, previewReadback: null, demoSignedIn: false, demoEmail: 'demo@example.com', demoName: 'Demo respondent', signinAlternative: false, error: '', navLock: false };
   const byId = id => document.getElementById(id);
   const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const currentQuestion = () => state.questions.find(q => q.id === state.current);
@@ -41,7 +45,7 @@
   }
   function navigate(id) {
     if (state.navLock) return;
-    stopVoiceAuto();
+    stopVoiceAuto();stopRecordingTick();
     state.current = id;
     state.error = '';
     state.previewReadback = null;
@@ -59,16 +63,16 @@
     navigate((selectedOption && selectedOption.goto) || nextId(q, answer));
   }
   function back() {
-    if (state.navLock || !state.history.length) return;
-    stopVoiceAuto();
+    if (state.navLock || !state.history.length){if(standalone)location.href='./index.html';return;}
+    stopVoiceAuto();stopRecordingTick();
     state.current = state.history.pop();
     state.previewReadback = null;
     state.error = '';
     render(true);
   }
   function resetDemo() {
-    stopVoiceAuto();
-    Object.assign(state, {current:'INTRO',history:[],answers:{},picks:{},fields:{},other:{},voiceText:{},voiceMode:{},versions:{},voiceOrigin:{},previewReadback:null,demoSignedIn:false,demoEmail:'demo@example.com',demoName:'Demo respondent',signinAlternative:false,error:'',navLock:false});
+    stopVoiceAuto();stopRecordingTick();
+    Object.assign(state, {current:standalone?'W1':'INTRO',history:[],answers:standalone?{INTRO:'yes'}:{},picks:{},fields:{},other:{},voiceText:{},voiceMode:{},versions:{},voiceOrigin:{},previewReadback:null,demoSignedIn:false,demoEmail:'demo@example.com',demoName:'Demo respondent',signinAlternative:false,error:'',navLock:false});
     render(true);
   }
   function buttons(primary, secondary) {
@@ -85,7 +89,7 @@
     const prog = q.step == null ? 100 : Math.round(((q.step+1)/state.steps.length)*100);
     const heading = q.title.replace(/\{first\}/g, state.demoSignedIn ? state.demoName.split(' ')[0] : '').replace(/\s+,/g,',').replace(/,\s*\./g,'.').replace(/\s+\./g,'.');
     let html='<div class="survey-inner">';
-    html += '<div class="survey-nav"><button type="button" class="back-btn" data-action="back" '+(!state.history.length || q.terminal?'disabled':'')+'>← Back</button><span class="question-step">'+(q.step == null?'Final screen':esc(state.steps[q.step]+' · '+(q.step+1)+'/6'))+'</span></div>';
+    html += '<div class="survey-nav"><button type="button" class="back-btn" data-action="back" '+(q.terminal?'disabled':'')+'>← Back</button><span class="question-step">'+(q.step == null?'Final screen':esc(state.steps[q.step]+' · '+(q.step+1)+'/6'))+'</span></div>';
     html += '<div class="progress-track" aria-hidden="true"><div class="progress-fill" style="width:'+prog+'%"></div></div>';
     html += '<h2 id="demoQuestionTitle" class="q-title" tabindex="-1">'+esc(heading)+'</h2>';
     if(q.lead) html+='<p class="q-helper">'+esc(q.lead)+'</p>';
@@ -160,19 +164,24 @@
       const answer = state.voiceText[q.id] != null ? state.voiceText[q.id] : ((state.answers[q.id] || {}).answer_final || '');
       const mode = state.voiceMode[q.id] || (answer?'text':'prompt');
       if(mode === 'ack'){
-        const info=state.voiceOrigin[q.id]==='typed' ? 'Your written answer was captured. A real interpretation will appear here after the AI is connected.' : (demoInterpretations[q.id]||'You shared what stood out to you about this quote.');
-        html+='<div class="readback" role="status" aria-live="polite"><h3>I understood</h3><p>'+esc(info)+'</p><span class="micro">Illustrative feedback, not a live AI interpretation. Moving to the next question automatically.</span></div>';
-        html+=buttons({label:'Continue now',action:'voice-next'},{label:'Edit my answer',action:'voice-edit'});
-      }else if(mode === 'prompt'){
-        html+='<p class="q-helper">Speak or type, whichever is easier. In the live app, you can speak for up to 2 minutes.</p>';
-        html+='<div class="voice-start"><button type="button" data-action="voice-sample"><span aria-hidden="true">🎙</span>Preview voice capture</button><button type="button" data-action="voice-type"><span aria-hidden="true">✍️</span>Type instead</button></div>';
-        html+='<p class="micro">No microphone is used in this prototype. In production: brief, neutral encouragement while you speak, then “I understood” and automatic continuation.</p>';
-      }else{
+        const info=state.voiceOrigin[q.id]==='typed'
+          ? 'You shared your experience in your own words.'
+          : (demoInterpretations[q.id]||'You shared what stood out to you about this quote.');
+        html+='<section class="readback" role="status" aria-live="polite"><img src="./assets/complete.svg" alt="" class="voice-status-icon"><h3>I understood</h3><p>'+esc(info)+'</p><span class="micro">Simulated interpretation, not a confirmed summary. Moving to the next question automatically.</span></section>';
+        html+=buttons({label:'Continue now',action:'voice-next'},{label:'Replace answer',action:'voice-edit'});
+      } else if(mode === 'record'){
+        const seconds=Math.min(120,Math.floor((Date.now()-recordingStarted)/1000));
+        html+='<section class="voice-panel"><div class="record-heading"><span class="record-dot" aria-hidden="true"></span>Simulated recording</div><img class="record-wave" src="./assets/recording-wave.svg" alt="Animated recording level bars"><p class="record-time"><span id="recordClock">'+Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0')+'</span> / 2:00</p><p class="record-prompt" id="recordPrompt">Take your time.</p>';
+        html+='<button type="button" class="button button-primary" data-action="voice-stop"><img src="./assets/stop.svg" alt="" class="invert-icon"> Stop preview</button>';
+        html+='<p class="micro">The microphone is off. This only previews how recording will feel.</p></section>';
+      } else if(mode === 'prompt'){
+        html+='<section class="voice-panel"><img class="voice-hero-icon" src="./assets/microphone.svg" alt=""><h3>Your first reaction, in your words</h3><p class="q-helper">Speak or type, whichever is easier. Up to two minutes when recording is enabled.</p><div class="voice-start"><button type="button" data-action="voice-sample"><img src="./assets/microphone.svg" alt="">Preview recording</button><button type="button" data-action="voice-type"><img src="./assets/type.svg" alt="">Type instead</button></div><p class="micro">Preview only: no microphone or Sarvam requests.</p></section>';
+      } else {
         html+='<label class="form-field">Write your answer<textarea id="voiceAnswer" rows="5" placeholder="Describe what happened in your own words.">'+esc(answer)+'</textarea></label>';
-        html+='<div class="voice-start"><button type="button" data-action="voice-sample"><span aria-hidden="true">🎙</span>Try a sample recording</button><button type="button" data-action="voice-type"><span aria-hidden="true">✍️</span>Keep typing</button></div>';
+        html+='<div class="voice-start"><button type="button" data-action="voice-sample"><img src="./assets/microphone.svg" alt="">Preview recording</button><button type="button" data-action="voice-type"><img src="./assets/type.svg" alt="">Keep typing</button></div>';
         html+=buttons({label:'Continue with my answer',action:'voice-continue'});
       }
-      if(q.optional && mode!=='ack')html+='<button class="back-btn" type="button" data-action="voice-skip">Skip this optional question</button>';
+      if(q.optional && mode!=='ack' && mode!=='record')html+='<button class="back-btn" type="button" data-action="voice-skip">Skip this optional question</button>';
     } else if(q.type==='finish'){
       html+='<div class="inline-note">Review demo only: finishing here will not save a response or delete any audio, because there is no backend in this preview.</div>';
       html+=buttons({label:'Finish demo',action:'finish'});
@@ -268,12 +277,30 @@
       return advance(output);
     }
     if(name==='voice-sample'){
+      stopRecordingTick();
       state.voiceOrigin[q.id]='spoken';
+      state.voiceMode[q.id]='record';
+      recordingStarted=Date.now();
+      state.error='';
+      render(false);
+      recordingTick=setInterval(()=>{
+        if(state.current!==q.id||state.voiceMode[q.id]!=='record'){stopRecordingTick();return;}
+        const elapsed=Math.floor((Date.now()-recordingStarted)/1000);
+        const clock=byId('recordClock');
+        if(clock)clock.textContent=Math.floor(elapsed/60)+':'+String(elapsed%60).padStart(2,'0');
+        const prompt=byId('recordPrompt');
+        if(prompt)prompt.textContent=elapsed>=36?'That is enough whenever you are ready.':elapsed>=13?'Anything else that stood out?':'Take your time.';
+        if(elapsed>=120){stopRecordingTick();action('voice-stop');}
+      },400);
+      return;
+    }
+    if(name==='voice-stop'){
+      stopRecordingTick();
       state.voiceText[q.id]=sample[q.id]||'I was not sure what the quote meant.';
       return showVoiceAcknowledgement(q.id);
     }
     if(name==='voice-type'||name==='voice-edit'){
-      stopVoiceAuto();
+      stopVoiceAuto();stopRecordingTick();
       if(name==='voice-edit' && state.voiceOrigin[q.id]==='spoken')state.voiceText[q.id]='';
       state.voiceOrigin[q.id]='typed';
       state.voiceMode[q.id]='text';state.error='';
@@ -386,7 +413,7 @@
   }
   byId('approveBtn').addEventListener('click',()=>copyReview(true));
   byId('changesBtn').addEventListener('click',()=>copyReview(false));
-  showTab(location.hash.slice(1));
+  showTab(standalone?'survey':location.hash.slice(1));
   fetch('./questions.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('questions.json not found');return r.json();}).then(data=>{
     state.questions=data.questions;state.steps=data.steps;render(false);
   }).catch(err=>{host.innerHTML='<div class="survey-inner"><h2>Could not load the survey</h2><p>'+esc(err.message)+'</p><p>Refresh the page or check that questions.json was published with the review site.</p></div>';});
