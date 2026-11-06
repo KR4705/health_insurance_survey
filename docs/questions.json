@@ -1,0 +1,705 @@
+{
+  "steps": [
+    "Start",
+    "About you",
+    "The quote",
+    "Hesitation",
+    "Payment",
+    "Wrap-up"
+  ],
+  "questions": [
+    {
+      "id": "INTRO",
+      "step": 0,
+      "type": "message",
+      "icon": "wave",
+      "landing": true,
+      "title": "Welcome, and thank you for being here 👋",
+      "body": [
+        "I'm Rohith, a product management student. I'm studying what happens after someone gets a price for health insurance: what makes it clear, what makes people hesitate, and what helps them decide."
+      ],
+      "whyTitle": "Why your answers matter",
+      "why": [
+        "Many people get a health insurance quote and never go ahead, often because it's hard to tell what the plan will actually pay for. Your experience, good or bad, shows where quotes leave people unsure. That helps make quotes clearer and more honest, not pushier."
+      ],
+      "facts": [
+        "About 5 minutes",
+        "Speak or type, whichever is easier",
+        "No right or wrong answers"
+      ],
+      "smallPrint": "This is an independent student study. It isn't run by an insurance company.",
+      "primary": {
+        "label": "Get started",
+        "value": "yes"
+      }
+    },
+    {
+      "id": "C00",
+      "step": 0,
+      "type": "welcome",
+      "icon": "wave",
+      "title": "First, a quick sign-in",
+      "lead": "So each person answers once, and you can pick up where you left off.",
+      "whyTitle": "Why we ask you to sign in",
+      "why": [
+        "So each person answers once. With Google, you can also pick up where you left off on another device.",
+        "With Google we only receive your name and email: never your password, contacts or anything else in your account.",
+        "Your email or number is kept separately from your answers. Rohith sees it only if you ask for the guide or a time to get back to you; otherwise it's erased when you finish."
+      ],
+      "consent": "",
+      "primary": {
+        "label": "Yes, let's start",
+        "value": "yes"
+      },
+      "secondary": {
+        "label": "No thanks",
+        "value": "no",
+        "goto": "DECLINED"
+      },
+      "signinPrompt": "Sign in with Google in one tap to begin.",
+      "titleSignedIn": "Hi {first}, thanks for being here 👋",
+      "leadSignedIn": "So each person answers once, and you can pick up where you left off. Start whenever you're ready.",
+      "contactLabel": "Your email or mobile number",
+      "contactPlaceholder": "e.g. priya@gmail.com or 98765 43210",
+      "contactHint": "Outside India? Start your number with + and the country code, e.g. +971.",
+      "nameLabel": "Your first name (optional)",
+      "contactButton": "Continue",
+      "contactToggle": "Use your email or mobile number instead"
+    },
+    {
+      "id": "W1",
+      "step": 0,
+      "type": "single",
+      "title": "Do you have about 5 minutes now?",
+      "helper": "A few questions about a health insurance quote you got recently.",
+      "options": [
+        {
+          "value": "yes",
+          "label": "Yes, let's do it now",
+          "emoji": "👍"
+        },
+        {
+          "value": "later",
+          "label": "Later works better",
+          "emoji": "🕒"
+        },
+        {
+          "value": "no",
+          "label": "No, thanks",
+          "emoji": "👋",
+          "goto": "DECLINED"
+        }
+      ]
+    },
+    {
+      "id": "CB",
+      "step": 0,
+      "type": "text",
+      "showIf": {
+        "W1": "later"
+      },
+      "goto": "CALLBACK",
+      "title": "When is a good time to get back to you?",
+      "helper": "We'll send you the link again then. Nothing else.",
+      "fields": [
+        {
+          "name": "when",
+          "label": "A good time",
+          "placeholder": "e.g. Tomorrow after 6 pm"
+        },
+        {
+          "name": "contact",
+          "label": "WhatsApp number or email",
+          "placeholder": "e.g. 98765 43210"
+        }
+      ]
+    },
+    {
+      "id": "W2",
+      "step": 0,
+      "type": "message",
+      "icon": "wave",
+      "showIf": {
+        "W1": "yes"
+      },
+      "title": "Before we start",
+      "body": [
+        "Your answers are used only for this study by Rohith, a product student. They are never sold or shared.",
+        "If you speak, your voice is turned into text and the recording is deleted when you finish. Please don't mention policy numbers or anyone's medical details.",
+        "You can stop at any time."
+      ],
+      "primary": {
+        "label": "I agree, let's start",
+        "value": "yes"
+      },
+      "secondary": {
+        "label": "I don't agree",
+        "value": "no",
+        "goto": "DECLINED"
+      }
+    },
+    {
+      "id": "S1",
+      "step": 1,
+      "type": "single",
+      "showIf": {
+        "W1": "yes"
+      },
+      "title": "Would you be comfortable buying health insurance online, on your own?",
+      "helper": "Without speaking to an agent or anyone at the company.",
+      "options": [
+        {
+          "value": "yes",
+          "label": "Yes",
+          "emoji": "💻"
+        },
+        {
+          "value": "maybe",
+          "label": "Maybe",
+          "emoji": "🤔"
+        },
+        {
+          "value": "no",
+          "label": "No",
+          "emoji": "🙅"
+        }
+      ]
+    },
+    {
+      "id": "S1b",
+      "step": 1,
+      "type": "single",
+      "showIf": {
+        "W1": "yes",
+        "S1": [
+          "maybe",
+          "no"
+        ]
+      },
+      "title": "What would you want a person for?",
+      "helper": "Pick the main one.",
+      "options": [
+        {
+          "value": "cover",
+          "label": "To check what's really covered",
+          "emoji": "🔍"
+        },
+        {
+          "value": "claims",
+          "label": "To be sure a claim will be paid",
+          "emoji": "🏥"
+        },
+        {
+          "value": "health",
+          "label": "To ask about my health conditions",
+          "emoji": "🩺"
+        },
+        {
+          "value": "compare",
+          "label": "To help me compare plans",
+          "emoji": "⚖️"
+        },
+        {
+          "value": "trust",
+          "label": "I just trust a person more",
+          "emoji": "🤝"
+        },
+        {
+          "value": "other",
+          "label": "Something else",
+          "emoji": "✏️",
+          "other": true
+        }
+      ]
+    },
+    {
+      "id": "S1bv",
+      "step": 1,
+      "type": "voice",
+      "optional": true,
+      "showIf": {
+        "W1": "yes",
+        "S1": [
+          "maybe",
+          "no"
+        ]
+      },
+      "title": "Tell me a bit more about that.",
+      "helper": "Optional. A sentence is enough."
+    },
+    {
+      "id": "S2",
+      "step": 1,
+      "type": "single",
+      "showIf": {
+        "W1": "yes"
+      },
+      "title": "In the last 6 months, did you get a price (a quote) for a health insurance plan?",
+      "options": [
+        {
+          "value": "yes",
+          "label": "Yes",
+          "emoji": "🧾"
+        },
+        {
+          "value": "no",
+          "label": "No",
+          "emoji": "🚫",
+          "goto": "SCREENED_OUT"
+        }
+      ]
+    },
+    {
+      "id": "Q3",
+      "step": 2,
+      "type": "single",
+      "showIf": {
+        "W1": "yes"
+      },
+      "title": "How did you get the quote?",
+      "helper": "If you got more than one, think of the one you looked at most closely.",
+      "options": [
+        {
+          "value": "insurer",
+          "label": "On an insurance company's website or app",
+          "emoji": "🏢"
+        },
+        {
+          "value": "aggregator",
+          "label": "On a comparison site (like Policybazaar)",
+          "emoji": "⚖️"
+        },
+        {
+          "value": "agent",
+          "label": "From an agent or advisor",
+          "emoji": "🧑‍💼"
+        },
+        {
+          "value": "bank",
+          "label": "Through my bank",
+          "emoji": "🏦"
+        },
+        {
+          "value": "employer",
+          "label": "Through my employer",
+          "emoji": "💼"
+        },
+        {
+          "value": "family",
+          "label": "A friend or family member sent it",
+          "emoji": "👨‍👩‍👧"
+        },
+        {
+          "value": "other",
+          "label": "Somewhere else",
+          "emoji": "✏️",
+          "other": true
+        }
+      ]
+    },
+    {
+      "id": "Q4",
+      "step": 2,
+      "type": "scale",
+      "showIf": {
+        "W1": "yes"
+      },
+      "title": "How easy was it to get the quote?",
+      "min": 1,
+      "max": 5,
+      "minLabel": "Very hard",
+      "maxLabel": "Very easy"
+    },
+    {
+      "id": "Q5",
+      "step": 2,
+      "type": "voice",
+      "showIf": {
+        "W1": "yes"
+      },
+      "title": "When you first saw the price, what went through your mind?",
+      "helper": "Your first reaction, in your own words."
+    },
+    {
+      "id": "Q6",
+      "step": 2,
+      "type": "single",
+      "showIf": {
+        "W1": "yes"
+      },
+      "title": "Did you understand what the plan would pay for?",
+      "options": [
+        {
+          "value": "yes",
+          "label": "Yes, clearly",
+          "emoji": "✅"
+        },
+        {
+          "value": "partly",
+          "label": "Partly",
+          "emoji": "🤏"
+        },
+        {
+          "value": "no",
+          "label": "Not really",
+          "emoji": "❓"
+        }
+      ]
+    },
+    {
+      "id": "Q7",
+      "step": 2,
+      "type": "scale",
+      "showIf": {
+        "W1": "yes"
+      },
+      "title": "When you saw the quote, how ready did you feel to go ahead?",
+      "min": 1,
+      "max": 5,
+      "minLabel": "Not at all ready",
+      "maxLabel": "Completely ready"
+    },
+    {
+      "id": "H8",
+      "step": 3,
+      "type": "single",
+      "showIf": {
+        "W1": "yes"
+      },
+      "title": "Did anything make you hesitate?",
+      "options": [
+        {
+          "value": "yes",
+          "label": "Yes",
+          "emoji": "✋"
+        },
+        {
+          "value": "no",
+          "label": "No",
+          "emoji": "👍"
+        }
+      ]
+    },
+    {
+      "id": "H9",
+      "step": 3,
+      "type": "multi",
+      "max": 3,
+      "showIf": {
+        "W1": "yes",
+        "H8": "yes"
+      },
+      "title": "What held you back?",
+      "helper": "Pick up to 3.",
+      "options": [
+        {
+          "value": "price",
+          "label": "The price",
+          "emoji": "💸"
+        },
+        {
+          "value": "cover",
+          "label": "Not sure what was covered or left out",
+          "emoji": "🔍"
+        },
+        {
+          "value": "claims",
+          "label": "Worried a claim wouldn't be paid",
+          "emoji": "🏥"
+        },
+        {
+          "value": "waiting",
+          "label": "Waiting periods",
+          "emoji": "⏳"
+        },
+        {
+          "value": "limits",
+          "label": "Limits like room rent or co-pay",
+          "emoji": "🧾"
+        },
+        {
+          "value": "family",
+          "label": "Needed to check with family",
+          "emoji": "👨‍👩‍👧"
+        },
+        {
+          "value": "compare",
+          "label": "Wanted to compare other plans",
+          "emoji": "⚖️"
+        },
+        {
+          "value": "trust",
+          "label": "Wasn't sure I could trust the company",
+          "emoji": "🤨"
+        },
+        {
+          "value": "health",
+          "label": "Questions about my health conditions",
+          "emoji": "🩺"
+        },
+        {
+          "value": "urgent",
+          "label": "It didn't feel urgent",
+          "emoji": "🗓️"
+        },
+        {
+          "value": "other",
+          "label": "Something else",
+          "emoji": "✏️"
+        }
+      ]
+    },
+    {
+      "id": "H9v",
+      "step": 3,
+      "type": "voice",
+      "optional": true,
+      "showIf": {
+        "W1": "yes",
+        "H8": "yes"
+      },
+      "title": "Tell me more about what held you back.",
+      "helper": "Optional, but it helps a lot."
+    },
+    {
+      "id": "H10",
+      "step": 3,
+      "type": "single",
+      "showIf": {
+        "W1": "yes",
+        "H8": "yes"
+      },
+      "title": "What did you do about it?",
+      "helper": "Pick the main thing.",
+      "options": [
+        {
+          "value": "read",
+          "label": "Read more online or in the policy",
+          "emoji": "📄"
+        },
+        {
+          "value": "asked",
+          "label": "Asked family or friends",
+          "emoji": "🗣️"
+        },
+        {
+          "value": "insurer",
+          "label": "Called or chatted with the insurer",
+          "emoji": "☎️"
+        },
+        {
+          "value": "agent",
+          "label": "Spoke to an agent",
+          "emoji": "🧑‍💼"
+        },
+        {
+          "value": "compared",
+          "label": "Compared other plans",
+          "emoji": "⚖️"
+        },
+        {
+          "value": "nothing",
+          "label": "Nothing, I just waited",
+          "emoji": "⏸️"
+        },
+        {
+          "value": "other",
+          "label": "Something else",
+          "emoji": "✏️",
+          "other": true
+        }
+      ]
+    },
+    {
+      "id": "P11",
+      "step": 4,
+      "type": "single",
+      "showIf": {
+        "W1": "yes"
+      },
+      "title": "Where did you end up?",
+      "options": [
+        {
+          "value": "paid",
+          "label": "I paid and bought the plan",
+          "emoji": "✅"
+        },
+        {
+          "value": "deciding",
+          "label": "I'm still deciding",
+          "emoji": "🤔"
+        },
+        {
+          "value": "dropped",
+          "label": "I decided not to buy, for now",
+          "emoji": "⏹️"
+        }
+      ]
+    },
+    {
+      "id": "P12a",
+      "step": 4,
+      "type": "voice",
+      "showIf": {
+        "W1": "yes",
+        "P11": "paid"
+      },
+      "title": "What finally made you go ahead?",
+      "helper": "What tipped it for you?"
+    },
+    {
+      "id": "P12c",
+      "step": 4,
+      "type": "scale",
+      "showIf": {
+        "W1": "yes",
+        "P11": "paid"
+      },
+      "title": "How confident did you feel when you paid?",
+      "min": 1,
+      "max": 5,
+      "minLabel": "Not at all",
+      "maxLabel": "Completely"
+    },
+    {
+      "id": "P12b",
+      "step": 4,
+      "type": "voice",
+      "showIf": {
+        "W1": "yes",
+        "P11": [
+          "deciding",
+          "dropped"
+        ]
+      },
+      "title": "What would have made you pay?",
+      "helper": "Think about that quote. What was missing?"
+    },
+    {
+      "id": "X13",
+      "step": 5,
+      "type": "voice",
+      "showIf": {
+        "W1": "yes"
+      },
+      "title": "If you could change one thing about the quote you saw, what would it be?"
+    },
+    {
+      "id": "X14",
+      "step": 5,
+      "type": "single",
+      "showIf": {
+        "W1": "yes"
+      },
+      "title": "Would you like a free 1-page guide to reading a health insurance quote?",
+      "options": [
+        {
+          "value": "whatsapp",
+          "label": "Yes, on WhatsApp",
+          "emoji": "💬"
+        },
+        {
+          "value": "email",
+          "label": "Yes, by email",
+          "emoji": "📧"
+        },
+        {
+          "value": "no",
+          "label": "No, thanks",
+          "emoji": "👋"
+        }
+      ]
+    },
+    {
+      "id": "X14c",
+      "step": 5,
+      "type": "text",
+      "showIf": {
+        "W1": "yes",
+        "X14": [
+          "whatsapp",
+          "email"
+        ]
+      },
+      "title": "Where should we send it?",
+      "fields": [
+        {
+          "name": "contact",
+          "label": "WhatsApp number or email",
+          "placeholder": "e.g. priya@gmail.com or 98765 43210",
+          "prefill": {
+            "from": "email",
+            "when": {
+              "X14": "email"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "Q21",
+      "step": null,
+      "type": "finish",
+      "completes": true,
+      "title": "Thank you, {first}. That really helps.",
+      "body": [
+        "Your answers are saved. That's everything."
+      ],
+      "primaryLabel": "Finish"
+    },
+    {
+      "id": "THANKS",
+      "type": "message",
+      "icon": "check",
+      "terminal": true,
+      "title": "All done. Thanks again, {first}!",
+      "body": [
+        "You can close this page now."
+      ]
+    },
+    {
+      "id": "CALLBACK",
+      "type": "message",
+      "icon": "check",
+      "terminal": true,
+      "jumpOnly": true,
+      "title": "Thanks, we'll be in touch",
+      "body": [
+        "We'll send you the link at the time you picked. You can close this page."
+      ]
+    },
+    {
+      "id": "SCREENED_OUT",
+      "type": "message",
+      "icon": "check",
+      "terminal": true,
+      "jumpOnly": true,
+      "title": "Thank you",
+      "body": [
+        "This study is about people who got a health insurance quote recently, so that's all we need. Thanks for your time."
+      ]
+    },
+    {
+      "id": "DECLINED",
+      "type": "message",
+      "icon": "wave",
+      "terminal": true,
+      "jumpOnly": true,
+      "title": "No problem",
+      "body": [
+        "Thanks for having a look. You can close this page."
+      ]
+    },
+    {
+      "id": "ALREADY_DONE",
+      "type": "message",
+      "icon": "check",
+      "terminal": true,
+      "jumpOnly": true,
+      "title": "You've already taken part",
+      "body": [
+        "Thanks again. We have your answers from last time, so there's nothing more to do."
+      ]
+    }
+  ]
+}
