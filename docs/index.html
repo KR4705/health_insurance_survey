@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f9f7f2">
+  <meta name="description" content="Independent research about what happens after a health insurance quote. Interactive flow review prototype.">
+  <title>Quote Journey · Survey design review</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="#plan" aria-label="Quote Journey review home"><span class="brand-mark" aria-hidden="true">◒</span><span>QUOTE JOURNEY <small>/ REVIEW LAB</small></span></a>
+      <span class="top-note">Independent student research <span aria-hidden="true">·</span> Prototype v0.1</span>
+    </div>
+  </header>
+  <nav class="site-nav shell" aria-label="Review sections">
+    <a href="#plan" data-tab="plan">01 <strong>Build plan</strong></a>
+    <a href="#survey" data-tab="survey">02 <strong>Try the survey</strong></a>
+    <a href="#flow" data-tab="flow">03 <strong>Flow approval</strong></a>
+  </nav>
+  <main>
+    <section class="shell section" id="plan" data-panel="plan">
+      <div class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="status-dot"></span> PHASE 01 · REVIEW FIRST</p>
+          <h1>Understand the journey.<br><em>Improve the questions.</em></h1>
+          <p class="hero-lead">A calm, voice-first health insurance quote survey. This review site shows the proposed screens and branches before we connect any real people, recordings or data.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#survey">Try the flow <span aria-hidden="true">↗</span></a>
+            <a class="button button-secondary" href="#flow">Review every step</a>
+          </div>
+          <p class="micro">No registration or real answers are sent from this prototype.</p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="floating-card card-a"><span class="card-step">THE QUOTE · 03/06</span><div class="mini-wave">▂▆▃█▂▅▂▇▃▆▁</div><strong>Tell me what happened.</strong><span>🎙 Talk or type</span></div>
+          <div class="floating-card card-b"><span class="tiny-check">✓</span><span>You're in control.<br><b>Confirm in your own words.</b></span></div>
+          <div class="orb orb-one"></div><div class="orb orb-two"></div>
+        </div>
+      </div>
+      <div class="section-heading"><div><p class="eyebrow">THE ROADMAP</p><h2>Seven steps to a launch-ready survey</h2></div><p>Each phase has a deliverable and a review gate. We will not connect live respondent data before you approve the flow.</p></div>
+      <div class="roadmap">
+        <article class="step-card current"><div class="step-number">01</div><div><span class="tag">NOW · REVIEW TEMPLATE</span><h3>Build plan and prototype</h3><p>Host a static review hub and interactive branching survey with the exact question IDs and wording from the source branch.</p><small>Deliverable: build plan, demo, flow review checklist</small></div></article>
+        <article class="step-card"><div class="step-number">02</div><div><span class="tag">YOUR APPROVAL</span><h3>Confirm the survey flow</h3><p>Check six research stages, exit paths, optional questions, response choices and privacy wording; record changes before freeze.</p><small>Deliverable: approved question map and copy</small></div></article>
+        <article class="step-card"><div class="step-number">03</div><div><span class="tag">AFTER APPROVAL</span><h3>Secure Supabase project</h3><p>Connect a new Mumbai-region Supabase project, run reviewed migrations, enable RLS and private audio storage, test least-privilege access.</p><small>Deliverable: isolated database and verified security</small></div></article>
+        <article class="step-card"><div class="step-number">04</div><div><span class="tag">AFTER APPROVAL</span><h3>Production API and sign-in</h3><p>Deploy the existing Node/Vercel endpoints; configure Google sign-in, contact alternative, session passes, retries and auto-resume.</p><small>Deliverable: authenticated, durable sessions</small></div></article>
+        <article class="step-card"><div class="step-number">05</div><div><span class="tag">AFTER APPROVAL</span><h3>Sarvam voice and read-back</h3><p>Use Sarvam only through the server. Implement two-minute recording, 29-second clips, transcription, editable answers and equal-weight confirmation.</p><small>Deliverable: voice-first flow with typing parity</small></div></article>
+        <article class="step-card"><div class="step-number">06</div><div><span class="tag">BEFORE LAUNCH</span><h3>Accessibility, security and device tests</h3><p>Audit permissions, secrets, storage grants, final-save states, iPhone microphone failures, 320px layouts and automated routes.</p><small>Deliverable: passed test matrix and key-free repository</small></div></article>
+        <article class="step-card"><div class="step-number">07</div><div><span class="tag">RELEASE GATE</span><h3>Publish the real survey</h3><p>Set production environment variables, confirm guide and callback fulfillment, review the privacy policy, then share the live URL.</p><small>Deliverable: approved live application and handoff</small></div></article>
+      </div>
+      <div class="notice"><span aria-hidden="true">✳</span><div><strong>Two different deployments</strong><p>GitHub Pages is the design-review home. The final survey requires a server-side API (Vercel) to protect Sarvam and Supabase credentials. The mock never stores real responses.</p></div></div>
+    </section>
+
+    <section class="shell section hidden" id="survey" data-panel="survey">
+      <div class="panel-head"><div><p class="eyebrow">INTERACTIVE FLOW PROTOTYPE</p><h1>Experience it like a respondent.</h1><p>Follow the actual question branches. Use fictional answers only; no sign-in, microphone upload, server saving or guide delivery occurs here.</p></div><span class="tag highlight">DEMO · NO DATA SUBMITTED</span></div>
+      <div class="demo-grid">
+        <div class="phone-frame">
+          <div class="phone-top"><span>QUOTE JOURNEY</span><span class="preview-label">PREVIEW</span></div>
+          <div id="surveyStage" aria-live="polite"><p>Loading the question flow…</p></div>
+        </div>
+        <aside class="demo-aside"><h3>What to test</h3><p>Use Back to change a response and inspect how the later questions change.</p>
+          <ul><li>“Maybe” on online buying opens the person-support branch.</li><li>“No” on recent quote ends at a screen-out.</li><li>Hesitation opens a three-choice blocker question.</li><li>Payment changes the next question.</li><li>Voice questions use an editable, simulated read-back.</li></ul>
+          <button class="button button-secondary" type="button" id="restartDemo">↻ Restart demo</button>
+          <p class="micro">A completed demo does not mean a response was saved.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="shell section hidden" id="flow" data-panel="flow">
+      <div class="panel-head"><div><p class="eyebrow">DECISION GATE · YOUR REVIEW</p><h1>Review the complete survey flow.</h1><p>Built from the approved source branch structure. These are the research screens to validate before production implementation.</p></div><span class="tag">6 RESEARCH STAGES</span></div>
+      <div class="flow-stack">
+        <article class="flow-group"><span class="flow-index">01 · START</span><h2>Introduction, sign-in and consent</h2><p><b>INTRO</b> Welcome and why it matters → <b>C00</b> Google or contact sign-in → <b>W1</b> Do you have 5 minutes? → <b>W2</b> Consent.</p><p class="branch">↳ W1 = later → CB callback form → CALLBACK. No, decline or no consent → DECLINED.</p></article>
+        <article class="flow-group"><span class="flow-index">02 · ABOUT YOU</span><h2>Buying comfort and eligibility</h2><p><b>S1</b> Comfortable purchasing online? → if maybe/no: <b>S1b</b> Why a person? → <b>S1bv</b> Optional tell-me-more → <b>S2</b> Quote in last six months?</p><p class="branch">↳ S2 = no → SCREENED_OUT; otherwise continue.</p></article>
+        <article class="flow-group"><span class="flow-index">03 · THE QUOTE</span><h2>Source and first reaction</h2><p><b>Q3</b> Where quote came from → <b>Q4</b> Ease (1–5) → <b>Q5</b> Initial reaction (voice/type) → <b>Q6</b> Understood coverage? → <b>Q7</b> Readiness (1–5).</p></article>
+        <article class="flow-group"><span class="flow-index">04 · HESITATION</span><h2>What got in the way?</h2><p><b>H8</b> Hesitated? → if yes: <b>H9</b> Up to three blockers → <b>H9v</b> Optional detail (voice/type) → <b>H10</b> What did you actually do?</p><p class="branch">↳ H8 = no → skip straight to P11.</p></article>
+        <article class="flow-group"><span class="flow-index">05 · PAYMENT</span><h2>What happened next?</h2><p><b>P11</b> Paid / deciding / stopped → paid: <b>P12a</b> What tipped it? and <b>P12c</b> Confidence (1–5); otherwise <b>P12b</b> What would have made you pay?</p></article>
+        <article class="flow-group"><span class="flow-index">06 · WRAP-UP</span><h2>One improvement and close</h2><p><b>X13</b> One thing to change (voice/type) → <b>X14</b> Free one-page guide? → if yes: <b>X14c</b> Delivery contact → <b>Q21</b> Finish → THANKS.</p><p class="branch">↳ Hold X14 for real launch until the guide exists and a sending method is approved.</p></article>
+      </div>
+      <div class="review-box">
+        <h2>Your approval checklist</h2><p>Choose the proposed decisions, add any changes, and copy your feedback back into this chat. This page does not transmit or store your review.</p>
+        <form id="reviewForm">
+          <label for="guideDecision">One-page guide (X14)</label>
+          <select id="guideDecision"><option value="Keep in prototype; hold live launch until guide + delivery exist">Keep in prototype; hold live launch until guide + delivery exist</option><option value="Remove X14 from v1 pending guide">Remove X14 from v1 pending guide</option><option value="Guide ready; send manually">Guide ready; send manually</option><option value="Guide ready; automate sending">Guide ready; automate sending</option></select>
+          <label for="callbackDecision">Later / callback (CB)</label>
+          <select id="callbackDecision"><option value="Keep; arrange manual follow-up before launch">Keep; arrange manual follow-up before launch</option><option value="Remove callback branch">Remove callback branch</option><option value="Keep; automate follow-up">Keep; automate follow-up</option></select>
+          <label for="w1Decision">Five-minute question (W1)</label>
+          <select id="w1Decision"><option value="Keep W1 after sign-in">Keep W1 after sign-in</option><option value="Move W1 before sign-in (requires flow update)">Move W1 before sign-in (requires flow update)</option></select>
+          <label for="thanksDecision">Referrals and thank-you email</label>
+          <select id="thanksDecision"><option value="Both off in v1">Both off in v1</option><option value="Thank-you email only">Thank-you email only</option><option value="Referral only">Referral only</option><option value="Both on">Both on</option></select>
+          <label for="notes">Question wording, layout or routing changes</label>
+          <textarea id="notes" rows="5" placeholder="Write any changes to approve before implementation. Please don't include secrets or real respondent data."></textarea>
+          <div class="button-row"><button type="button" id="approveBtn" class="button button-primary">Copy flow approval</button><button type="button" id="changesBtn" class="button button-secondary">Copy change request</button></div>
+          <p id="copyStatus" class="micro" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="shell"><div><strong>QUOTE JOURNEY</strong><p>Independent, neutral research — not affiliated with an insurance company.</p></div><div><a href="./about.html">About</a><a href="./privacy.html">Prototype privacy</a><a href="https://github.com/KR4705/health_insurance_survey">Repository</a></div></div></footer>
+  <script src="./app.js" defer></script>
+</body>
+</html>
