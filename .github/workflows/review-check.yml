@@ -1,0 +1,19 @@
+name: Review template checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: node --check docs/app.js
+      - name: Question and flow smoke checks
+        run: node scripts/check-review.mjs
