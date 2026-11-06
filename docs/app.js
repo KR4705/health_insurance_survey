@@ -248,7 +248,7 @@
     if(e.target.id==='testContact')state.fields.signinContact=e.target.value;
     if(e.target.id==='testName')state.fields.signinName=e.target.value;
     if(e.target.id==='otherText')state.other[q.id]=e.target.value;
-    if(e.target.id==='voiceAnswer'){state.voiceText[q.id]=e.target.value;state.previewReadback=null;}
+    if(e.target.id==='voiceAnswer'){const hadReadback=!!state.previewReadback;const pos=e.target.selectionStart;state.voiceText[q.id]=e.target.value;state.previewReadback=null;if(hadReadback){render(false);const field=byId('voiceAnswer');if(field){field.focus();field.setSelectionRange(pos,pos);}}}
     if(e.target.hasAttribute('data-field')){
       if(!state.fields[q.id])state.fields[q.id]={};
       state.fields[q.id][e.target.dataset.field]=e.target.value;
