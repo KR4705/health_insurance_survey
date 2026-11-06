@@ -9,7 +9,7 @@ The review page is in `docs/index.html` and includes:
 2. A branching survey demo driven by the original `questions.json`.
 3. A full six-stage flow review with an approval checklist and copyable feedback.
 
-The question content is derived from `KR4705/voice_agent_sarvam` at `flow/quote-journey`. The other repository's `main` branch has **not** been modified.
+The original question content came from `KR4705/voice_agent_sarvam` at `flow/quote-journey`; the active `docs/questions.json` now contains proposed v2 research changes. The old flow is archived as `docs/questions-v1.json`. The other repository's `main` branch has **not** been modified.
 
 ## Publish this review with GitHub Pages
 
@@ -46,9 +46,9 @@ Do not paste secret values into GitHub files, commits, screenshots, logs or PRs.
 ## Approval checklist
 
 Before implementing production, decide:
-1. Guide offer X14: provide a real guide and delivery method or remove it.
-2. Callback CB: manual or automatic re-send arrangement.
-3. Keep or move W1 relative to sign-in.
+1. Email-only guide and findings follow-up X14: provide real content and a delivery method, or hold it until ready.
+2. Callback CB: build one-time scheduled email reminder, including date, time, time zone and consent.
+3. Confirm W1 before sign-in and retain the later reminder branch.
 4. Referral and thank-you email (both disabled in prototype).
 5. Approve exact question wording, branch conditions and privacy text.
 
@@ -61,3 +61,19 @@ Full route through paid and dropped branches; no-consent/screen-out/callback; op
 ## Status
 
 **Phase 01: design review template.** The active demo is explicitly not a launched research survey.
+
+
+## Review revision 2 (awaiting final approval)
+
+The active `docs/questions.json` now reflects the owner's requested changes. The previous reference remains available as `docs/questions-v1.json`.
+
+- `INTRO → W1`, then **yes → C00 → W2**, **later → CB → CALLBACK**, **no → DECLINED**. A reminder can be scheduled before sign-in and uses a date, time, time zone and email.
+- `H9` reasons are presented as themed tiles, with the original answer codes and max-three rule.
+- `Q7` asks how sure the respondent was about buying the plan; `P12c` asks whether the paid-for cover was understood.
+- Open answers use voice or typing; the **raw speech transcript is not shown**. After a brief, non-blocking “I understood” summary, the survey proceeds without an extra Yes/Not quite choice. Respondents can go Back to correct their answers. Summaries are a paraphrase, not a confirmation, and the original answer must be preserved securely for analysis.
+- `X13` asks about information or help missing beyond the quote.
+- `X14` is email-only, with choices of guide, aggregated study findings, both, or neither. The optional follow-up is distinct from the omitted generic thank-you email.
+
+**Product changes requiring backend implementation after approval:** moving `W1` before sign-in and supporting unauthenticated reminder requests requires a new protected API path; changing the voice read-back and X14 option values requires updating API validation, answer versioning and storage; sending scheduled reminders needs server-side scheduling, explicit opt-in, correct time zones, retries and a cancellation method. No such production changes have been deployed yet.
+
+**Launch blockers:** guide content + fulfillment, future findings email consent and delivery, reminder scheduler, privacy/retention review, live browser and device testing, and Supabase write access redesign (`SECURITY-REVIEW.md`).
