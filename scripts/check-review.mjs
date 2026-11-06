@@ -82,11 +82,19 @@ assert.equal(q.voiceExperience.requiresConfirmation,false);
 assert.equal(q.voiceExperience.rawTranscriptVisible,false);
 assert.equal(q.voiceExperience.autoContinueAfterReadback,true);
 assert.equal(q.voiceExperience.readbackTitle,'I understood');
-const html=read('docs/index.html'), js=read('docs/app.js'), css=read('docs/style.css');
+const html=read('docs/index.html'), review=read('docs/review.html'), survey=read('docs/survey.html'), js=read('docs/app.js'), css=read('docs/style.css'), fieldnotes=read('docs/fieldnotes.css');
 assert.ok(!js.includes('Here’s what you said')&&!js.includes('Confirm my answer'),'New voice experience should not expose old mandatory confirmation UI');
 assert.ok(js.includes('tile-grid')&&css.includes('.tile-grid'),'Tile layout must be styled and rendered');
-for(const path of ['./app.js','./style.css','./questions.json'])assert.ok(html.includes(path)||js.includes(path),'Resource link missing '+path);
-for(const id of ['plan','survey','flow'])assert.ok(html.includes('id="'+id+'"'),'Review panel missing '+id);
+assert.ok(html.includes('./survey.html'),'Landing page must start approved survey');
+assert.ok(html.includes('./assets/health-quote-illustration.svg'),'Landing must use source illustration');
+assert.ok(html.includes('./fieldnotes.css'),'Landing must use Fieldnotes styles');
+assert.ok(survey.includes('./app.js')&&survey.includes('./fieldnotes.css'),'Standalone survey must load review engine and styles');
+assert.ok(survey.includes('id="surveyStage"')&&survey.includes('id="survey"'),'Survey host and panel required');
+for(const path of ['./app.js','./style.css','./questions.json'])assert.ok(review.includes(path)||js.includes(path),'Review resource missing '+path);
+for(const id of ['plan','survey','flow'])assert.ok(review.includes('id="'+id+'"'),'Review panel missing '+id);
+for(const asset of ['health-quote-illustration','microphone','type','recording-wave','stop','complete'])assert.ok(read('docs/assets/'+asset+'.svg').includes('<svg'),'Missing imported SVG '+asset);
+assert.ok(fieldnotes.includes('#faf8f1')&&fieldnotes.includes('Georgia'),'Must retain source palette and serif design');
+assert.ok(js.includes('standalone?\'W1\':\'INTRO\''),'Standalone survey must begin at W1 before sign-in');
 assert.ok(!/\b(localStorage|indexedDB|sessionStorage)\b/.test(js),'Prototype must not store input');
 assert.ok(!/fetch\s*\(\s*['"\`]\/api\//.test(js),'Prototype must not call production APIs');
 const secretPattern=/(?:sb_secret_[A-Za-z0-9_-]{12,}|AIza[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9_-]{24,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{24,})/;
@@ -94,4 +102,4 @@ for(const name of readdirSync(new URL('docs/',root))){
   if(!name.endsWith('.html')&&!name.endsWith('.js')&&!name.endsWith('.json')&&!name.endsWith('.css'))continue;
   assert.ok(!secretPattern.test(read('docs/'+name)),'Possible credential in '+name);
 }
-console.log('Review v2 checks passed: revised flow order, email-only follow-ups, grouped tiles, new voice behavior, exit branches and no exposed credentials.');
+console.log('Fieldnotes rebuild checks passed: imported assets, updated landing, full survey engine, reviewed routes and no exposed credentials.');
