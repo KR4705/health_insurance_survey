@@ -85,7 +85,7 @@
     html += '<h2 id="demoQuestionTitle" class="q-title" tabindex="-1">'+esc(heading)+'</h2>';
     if(q.lead) html+='<p class="q-helper">'+esc(q.lead)+'</p>';
     if(q.helper) html+='<p class="q-helper">'+esc(q.helper)+'</p>';
-    if(q.body) html+=q.body.map(text=>'<p class="q-body">'+esc(text)+'</p>').join('');
+    if(q.body && q.id!=='Q21') html+=q.body.map(text=>'<p class="q-body">'+esc(text)+'</p>').join('');
     if (q.id === 'INTRO') {
       html += '<div class="hero-intro"><h3>'+esc(q.whyTitle || 'Why it matters')+'</h3><p>'+esc((q.why || []).join(' '))+'</p></div>';
       html += '<p class="q-helper">'+esc((q.facts || []).join(' · '))+'</p><p class="micro">'+esc(q.smallPrint || '')+'</p>';
